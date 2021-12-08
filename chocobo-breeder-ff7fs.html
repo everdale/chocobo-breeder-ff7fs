@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chocobo Breeder Simulator (FF7 First Soldier)</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #282828;
+            color: #b8b8b8;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        #logo {
+            width: 100%;
+            margin-top: 15%;
+        }
+        
+        .left {
+            width: 20%;
+        }
+        
+        .left img {
+            width: 60%;
+            margin-top: 30%;
+            float: left;
+        }
+        
+        .right {
+            width: 20%;
+        }
+        
+        .right img {
+            width: 60%;
+            margin-top: 10%;
+            float: right;
+        }
+        
+        canvas {
+            height: 200px;
+            width: 200px;
+        }
+        
+        .row {
+            display: flex;
+        }
+        
+        .row>* {
+            margin: 0 30px;
+        }
+        
+        button {
+            margin: 40px;
+            padding: 15px;
+            color: #b8b8b8;
+            background: linear-gradient(180deg, rgba(54, 43, 23, 1) 0%, rgba(65, 49, 33, 1) 35%, rgba(122, 90, 67, 1) 100%);
+        }
+        
+        label {
+            display: block;
+            width: 140px;
+        }
+        
+        label input {
+            float: right;
+            width: 35px;
+        }
+        
+        .small {
+            font-size: 12px;
+        }
+        
+        ol {
+            font-size: 20px;
+            margin-top: -30px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- APPEARANCE and COLOR IS NOT IMPORTANT? -->
+    <!-- 
+    <h2>Appearance</h2>
+    <label>Composed<input type="radio" id="Composed" name="Appearance" value="Composed" checked></label>
+    <label>Cute<input type="radio" id="Cute" name="Appearance" value="Cute"></label>
+    <label>Elegant<input type="radio" id="Elegant" name="Appearance" value="Elegant"></label>
+    <label>Natural<input type="radio" id="Natural" name="Appearance" value="Natural"></label>
+    <label>Blind?<input type="radio" id="" name="Appearance" value=""></label>
+
+    <h2>Color</h2>
+    <label>Color<input type="radio" id="" name="Color" value="" checked></label>
+    <label>Color<input type="radio" id="" name="Color" value=""></label>
+    <label>Color<input type="radio" id="" name="Color" value=""></label>
+    <label>Color<input type="radio" id="" name="Color" value=""></label>
+    <label>Color<input type="radio" id="" name="Color" value=""></label>
+    -->
+    <div class="left"><img id="logo" src="https://static.wikia.nocookie.net/finalfantasy/images/1/1a/Final_Fantasy_VII_The_First_Soldier_logo.png/revision/latest?cb=20210226003457"><img src="shinra_logo_vector_by_keytickler_d5pwd8n.svg"></div>
+    <div class="main">
+        <div class="row">
+            <div id="basestat_div">
+                <h2>Base Stats</h2>
+                <label class="small" for="bSpeed">Speed</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="bSpeed">
+                <br><label class="small" for="bHP">HP</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="bHP">
+                <br><label class="small" for="bJump">Jump</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="bJump">
+                <br><label class="small" for="bStamina">Stamina</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="bStamina">
+                <br><label class="small" for="bAttack">Attack</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="bAttack">
+            </div>
+
+            <div id="currstat_div">
+                <h2>Current Stats</h2>
+                <label class="small" for="cSpeed">Speed</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="cSpeed">
+                <br><label class="small" for="cHP">HP</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="cHP" name="cHP">
+                <br><label class="small" for="cJump">Jump</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="cJump">
+                <br><label class="small" for="cStamina">Stamina</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="cStamina">
+                <br><label class="small" for="cAttack">Attack</label><input oninput="inputTrigger()" type="range" min="0" max="100" value="50" class="slider" id="cAttack">
+            </div>
+
+            <div id="food_div">
+                <h2>Available Food</h2>
+                <br>
+                <label>Curiel Root<input type="number" id="cr" min="0" max="100" value="50"></label>
+                <br><label>Pahsana Fruit<input type="number" id="pf" min="0" max="100" value="50"></label>
+                <br><label>Tantalplant<input type="number" id="tp" min="0" max="100" value="50"></label>
+                <br><label>Krakka Root<input type="number" id="kr" min="0" max="100" value="50"></label>
+                <br><label>Gysahl Green<input type="number" id="gg" min="0" max="100" value="50"></label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="like_div">
+                <h2>Likes</h2>
+                <select name="Likes" id="Likes">
+        <option value="curiel">Curiel Root</option>
+        <option value="pahsana">Pahsana Fruit</option>
+        <option value="tantal">Tantalplant</option>
+        <option value="krakka">Krakka Root</option>
+        <option value="gysahl">Gysahl Green</option>
+    </select>
+            </div>
+
+            <div id="priostat_div">
+                <h2>Preferred Stat</h2>
+                <select name="prio" id="prio">
+        <option value="0">Speed</option>
+        <option value="1">HP</option>
+        <option value="2">Jump</option>
+        <option value="3">Stamina</option>
+        <option value="4">Attack</option>
+    </select>
+            </div>
+
+            <div id="button_div">
+                <button onclick="runScript()">Run Simulation</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <h2>Before</h2>
+                <canvas id="before" height="300" width="300"></canvas>
+                <h2>After</h2>
+                <canvas id="diagram" height="300" width="300"></canvas>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+    <div class="right"><img src="https://static.wikia.nocookie.net/finalfantasy/images/6/6c/FFVII_Chocobo_in_Battle.png/revision/latest?cb=20120320211005"><img src="amika.png"></div>
+    <script>
+        var beforeContext = $("#before")[0].getContext("2d");
+        drawBeforeDiagram(beforeContext, undefined);
+
+        function inputTrigger() {
+            currentAtLeastBase();
+            drawBeforeDiagram(beforeContext, undefined);
+        }
+
+        function currentAtLeastBase() {
+            var [base, current] = generateStats();
+            var cArray = ["#cSpeed", "#cHP", "#cJump", "#cStamina", "#cAttack"];
+            for (var i = 0; i < 5; i++) {
+                base[i] > current[i] ? $(cArray[i]).val(base[i]) : null;
+            }
+        }
+
+        function drawBeforeDiagram(context, maximum) {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            var biggerPentagon = [];
+            var [base, current] = generateStats();
+            maximum !== undefined ? biggerPentagon = maximum : biggerPentagon = current;
+            drawPentagon(150, 150, 150, context);
+            drawPentagon(120, 150, 150, context);
+            drawPentagon(90, 150, 150, context);
+            drawPentagon(60, 150, 150, context);
+            drawPentagon(30, 150, 150, context);
+            drawLines(150, 150, 150, context);
+            drawPolygon(biggerPentagon, "#bdad4e", context, 150, 150, 150, true);
+            drawPolygon(base, "#ded28b", context, 150, 150, 150, false);
+        }
+
+        function drawPolygon(arr, color, ctx, radius, centerX, centerY, strokeYes) {
+            var region = new Path2D();
+            for (var i = 0; i < 5; i++) {
+                var theX = centerX + Math.cos(2 * Math.PI / 5 * i - Math.PI / 2) * arr[i] * radius / 100;
+                var theY = centerY + Math.sin(2 * Math.PI / 5 * i - Math.PI / 2) * arr[i] * radius / 100;
+                i == 0 ? region.moveTo(theX, theY) : region.lineTo(theX, theY);
+            }
+            region.closePath();
+            ctx.fillStyle = color;
+            ctx.fill(region);
+            ctx.strokeStyle = "#dadada";
+            ctx.lineWidth = 4;
+            strokeYes ? ctx.stroke(region) : null;
+        }
+
+        function drawPentagon(s, x, y, context) {
+            var numberOfSides = 5,
+                size = s,
+                Xcenter = x,
+                Ycenter = y;
+            context.beginPath();
+            context.moveTo(Xcenter + size * Math.cos(-Math.PI / 2), Ycenter + size * Math.sin(-Math.PI / 2));
+            for (var i = 1; i <= numberOfSides; i += 1) {
+                context.lineTo(Xcenter + size * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / numberOfSides));
+            }
+            context.strokeStyle = "#888";
+            context.lineWidth = 1;
+            context.stroke();
+        }
+
+        function drawLines(s, x, y, context) {
+            context.beginPath();
+            for (var i = 0; i < 5; i++) {
+                context.moveTo(x, y);
+                context.lineTo(x + s * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / 5), y + s * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / 5))
+            }
+            context.strokeStyle = "#888";
+            context.lineWidth = 1;
+            context.stroke();
+        }
+
+        function generateStats() {
+            var baseStats = [$("#bSpeed").val(), $("#bHP").val(), $("#bJump").val(), $("#bStamina").val(), $("#bAttack").val()];
+            var currStats = [$("#cSpeed").val(), $("#cHP").val(), $("#cJump").val(), $("#cStamina").val(), $("#cAttack").val()];
+            baseStats = parseIntArray(baseStats);
+            currStats = parseIntArray(currStats);
+            return [baseStats, currStats];
+        }
+
+        function parseIntArray(a) {
+            var result = a.map(function(x) {
+                return parseInt(x, 10);
+            });
+            return result
+        }
+
+        function runScript() {
+            var permArr = [],
+                usedChars = [],
+                listOfFood = [],
+                permutations = [],
+                allRuns = [],
+                runsPair = []; //runsPair is array-of-pairs inside array
+            var res = $("#result");
+            var c = $("#diagram");
+            var cc = c[0].getContext("2d");
+            var prio = $("#prio").val();
+            permutations = permute([0, 1, 2, 3, 4]);
+            runsPair = createRuns(permutations);
+            allRuns = separatePair(runsPair, 0);
+            foodRuns = separatePair(runsPair, 1);
+
+            //var array = permute(listOfFood); //PERMUTE IS INTENSIVE AF
+            //res.html(JSON.stringify(allRuns)); //PERMUTE IS INTENSIVE AF
+            var maximum = findMax(allRuns, prio);
+            var orderStr = getOrder(permutations[maximum.idx], foodRuns[maximum.idx]);
+            var buttonHTML = `<button onclick='var currStats = [$("#cSpeed"), $("#cHP"), $("#cJump"), $("#cStamina"), $("#cAttack")];
+                for (var i = 0; i < 5; i++) {
+                    currStats[i].val([` + allRuns[maximum.idx] + `][i]);
+                };inputTrigger()'>Copy to Current Stats</button>`
+            drawDiagram(cc, allRuns[maximum.idx]);
+            res.html("<p>Feed the chocobo in this order:<ol>" + orderStr + "</ol></p>" + buttonHTML);
+
+            function drawDiagram(context, maximum) {
+                context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+                var biggerPentagon = [];
+                var [base, current] = generateStats();
+                maximum !== undefined ? biggerPentagon = maximum : biggerPentagon = current;
+                drawPentagon(150, 150, 150, context);
+                drawPentagon(120, 150, 150, context);
+                drawPentagon(90, 150, 150, context);
+                drawPentagon(60, 150, 150, context);
+                drawPentagon(30, 150, 150, context);
+                drawPolygon(biggerPentagon, "#bdad4e", context, 150, 150, 150, true);
+                drawPolygon(base, "#ded28b", context, 150, 150, 150, false);
+            }
+
+            function getOrder(arr, foodArr) {
+                var tempStr = "";
+                for (var i = 0; i < 5; i++) {
+                    switch (arr[i]) {
+                        case 0:
+                            tempStr += "<br><li><img src='curiel.png' height='50'> x" + foodArr[arr[i]] + "</li>";
+                            break;
+                        case 1:
+                            tempStr += "<br><li><img src='pahsana.png' height='50'> x" + foodArr[arr[i]] + "</li>";
+                            break;
+                        case 2:
+                            tempStr += "<br><li><img src='tantal.png' height='50'> x" + foodArr[arr[i]] + "</li>";
+                            break;
+                        case 3:
+                            tempStr += "<br><li><img src='krakka.png' height='50'> x" + foodArr[arr[i]] + "</li>";
+                            break;
+                        case 4:
+                            tempStr += "<br><li><img src='gysahl.png' height='50'> x" + foodArr[arr[i]] + "</li>";
+                            break;
+                    }
+                }
+                return tempStr;
+            }
+
+            function separatePair(list, n) {
+                var tempList = [];
+                var listLen = list.length;
+                for (var i = 0; i < listLen; i++) {
+                    tempList.push(list[i][n]);
+                }
+                return tempList;
+            }
+
+            function findMax(a, prio) {
+                var maxSum = 0;
+                var index = 0;
+                aLen = a.length;
+                for (var i = 0; i < aLen; i++) {
+                    var sum = a[i][0] + a[i][1] + a[i][2] + a[i][3] + a[i][4];
+                    if (sum > maxSum) {
+                        maxSum = sum;
+                        index = i;
+                    } else if (sum == maxSum) {
+                        if (a[i][prio] > a[index][prio]) {
+                            index = i;
+                        }
+                    }
+                }
+                return {
+                    max: maxSum,
+                    idx: index
+                };
+            }
+
+            function findMin(a) {
+                var minSum = 500;
+                var index = 0;
+                aLen = a.length;
+                for (var i = 0; i < aLen; i++) {
+                    var sum = a[i][0] + a[i][1] + a[i][2] + a[i][3] + a[i][4];
+                    if (sum < minSum) {
+                        minSum = sum;
+                        index = i;
+                    }
+                }
+                return {
+                    minSum,
+                    index
+                };
+            }
+
+            function createRuns(p) {
+                var tempArray = [];
+                var [baseStats, currStats] = generateStats();
+                var foodAmount = [$("#cr").val(), $("#pf").val(), $("#tp").val(), $("#kr").val(), $("#gg").val()];
+                var favorite = $("#Likes").val();
+                foodAmount = parseIntArray(foodAmount);
+                var pLen = p.length;
+                for (var i = 0; i < pLen; i++) {
+                    var consumedFood = [0, 0, 0, 0, 0];
+                    var tempStats = [...currStats];
+                    for (var j = 0; j < 5; j++) {
+                        var kLen = foodAmount[p[i][j]];
+                        for (var k = 0; k < kLen; k++) {
+                            var l = p[i][j];
+                            switch (l) {
+                                case 0:
+                                    if (favorite == "curiel") {
+                                        tempStats = addAndSub(0, 3, 4, tempStats, false);
+                                    }
+                                    tempStats = addAndSub(0, 3, 4, tempStats, true);
+                                    break;
+                                case 1:
+                                    if (favorite == "pahsana") {
+                                        tempStats = addAndSub(3, 0, 2, tempStats, false);
+                                    }
+                                    tempStats = addAndSub(3, 0, 2, tempStats, true);
+                                    break;
+                                case 2:
+                                    if (favorite == "tantal") {
+                                        tempStats = addAndSub(1, 0, 2, tempStats, false);
+                                    }
+                                    tempStats = addAndSub(1, 0, 2, tempStats, true);
+                                    break;
+                                case 3:
+                                    if (favorite == "krakka") {
+                                        tempStats = addAndSub(4, 1, 3, tempStats, false);
+                                    }
+                                    tempStats = addAndSub(4, 1, 3, tempStats, true);
+                                    break;
+                                case 4:
+                                    if (favorite == "gysahl") {
+                                        tempStats = addAndSub(2, 1, 4, tempStats, false);
+                                    }
+                                    tempStats = addAndSub(2, 1, 4, tempStats, true);
+                                    break;
+                            }
+                        }
+                    }
+                    tempArray.push([tempStats, consumedFood])
+                }
+                return tempArray;
+
+                function addAndSub(add, sub1, sub2, stats, consume) {
+                    if (stats[add] < 100) {
+                        consume ? consumedFood[add] += 1 : null;
+                        stats[add] += 0.8;
+                        stats[add] > 100 ? tempStats[add] = 100 : null;
+                        stats[sub1] > baseStats[sub1] ? tempStats[sub1] -= 0.4 : null;
+                        stats[sub2] > baseStats[sub2] ? tempStats[sub2] -= 0.4 : null;
+                    }
+                    return stats;
+                }
+            }
+
+
+
+
+
+            /*function createFoodList() {
+                var c = $("#cr").val(),
+                    p = $("#pf").val(),
+                    t = $("#tp").val(),
+                    k = $("#kr").val(),
+                    g = $("#gg").val();
+                var tempList = [];
+                for (var i = 0; i < c; i++) {
+                    tempList.push("c");
+                }
+                for (var i = 0; i < p; i++) {
+                    tempList.push("p");
+                }
+                for (var i = 0; i < t; i++) {
+                    tempList.push("t");
+                }
+                for (var i = 0; i < k; i++) {
+                    tempList.push("k");
+                }
+                for (var i = 0; i < g; i++) {
+                    tempList.push("g");
+                }
+                return tempList;
+            }
+            */
+
+            //PERMUTE IS INTENSIVE AF
+            function permute(input) {
+                var i, ch;
+                for (i = 0; i < input.length; i++) {
+                    ch = input.splice(i, 1)[0];
+                    usedChars.push(ch);
+                    if (input.length == 0) {
+                        permArr.push(usedChars.slice());
+                    }
+                    permute(input);
+                    input.splice(i, 0, ch);
+                    usedChars.pop();
+                }
+                return permArr
+            };
+        }
+    </script>
+</body>
+
+</html>
